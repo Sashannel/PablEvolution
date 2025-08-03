@@ -26,9 +26,15 @@ def main():
 Creatures = [creature.Creature(window, max_screen_x, max_screen_y) for i in range(10)]
 
 def update():
+
     print('update()')
-    for i in range(len(Creatures)):
-        print(Creatures[i].update())
+
+    for creature in Creatures[:]:
+
+        if creature.update() == "death":
+
+            Creatures.remove(creature)
+            print(creature, "is dead")
 
 if __name__ == "__main__":
     main()
