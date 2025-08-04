@@ -32,6 +32,24 @@ class NN:
 
 
         return self.layers[-1].nodes
+    
+    def copyLayers(self):
+
+        copied_layers = []
+
+        for layer in self.layers:
+
+            copied_layer = Layer(layer.numberOfInputs, layer.numberOfNodes)
+            copied_layer.weights = layer.weights.copy()
+            copied_layer.biases = layer.biases.copy()
+            copied_layers.append(copied_layer)
+            
+        return copied_layers
+    
+    def copy(self):
+        new_nn = NN()
+        new_nn.layers = self.copyLayers()
+        return new_nn
 
 
 class Layer:
@@ -53,7 +71,7 @@ class Layer:
 
     def activation(self):
 
-        self.nodes = 4 / (1 + numpy.exp(self.nodes))
+        self.nodes = 4 * numpy.tanh(self.nodes)
 
     def mutateLayer(self, mutation_chance, mutation_amount):
 
@@ -61,12 +79,14 @@ class Layer:
 
             for j in range(self.numberOfInputs):
 
-                if random.randrange(0, 1) < mutation_chance:
+                if random.randrange(0, 1) * 0.0001 < mutation_chance:
+                    
+                    print("Mutation on weights")
+                    self.weights[i, j] += random.randrange(-1, 1) * 0.0001 * mutation_amount
 
-                    self.weights[i, j] += random.randrange(-1, 1) * mutation_amount
+            if random.randrange(0, 1) * 0.0001 < mutation_chance:
 
-            if random.randrange(0, 1) < mutation_chance:
-
+                print("Mutation on biases")
                 self.biases[i] += random.randrange(-1, 1) * mutation_amount
 
     
@@ -75,8 +95,3 @@ class Layer:
         for i in range(len(nn.layers)):
 
             nn.layers[i].mutateLayer(mutation_chance, mutation_amount)
-
-
-def copyLayers():
-
-    return NN().layers[:]
