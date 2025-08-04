@@ -1,12 +1,13 @@
 import numpy as numpy
 import math
+import random
 
 class NN:
 
     def __init__(self):
 
         self.layers = []
-        self.networkShape = [9, 30, 15, 15, 1]
+        self.networkShape = [10, 15, 15, 1]
 
         for i in range(1, len(self.networkShape)):
 
@@ -53,3 +54,29 @@ class Layer:
     def activation(self):
 
         self.nodes = 4 / (1 + numpy.exp(self.nodes))
+
+    def mutateLayer(self, mutation_chance, mutation_amount):
+
+        for i in range(self.numberOfNodes):
+
+            for j in range(self.numberOfInputs):
+
+                if random.randrange(0, 1) < mutation_chance:
+
+                    self.weights[i, j] += random.randrange(-1, 1) * mutation_amount
+
+            if random.randrange(0, 1) < mutation_chance:
+
+                self.biases[i] += random.randrange(-1, 1) * mutation_amount
+
+    
+    def mutate(self, mutation_chance, mutation_amount, nn):
+
+        for i in range(len(nn.layers)):
+
+            nn.layers[i].mutateLayer(mutation_chance, mutation_amount)
+
+
+def copyLayers():
+
+    return NN().layers[:]
