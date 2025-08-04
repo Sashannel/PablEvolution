@@ -12,7 +12,7 @@ max_screen_x = 1820
 max_screen_y = 980
 
 mutation_chance = 0.1
-mutation_amount = 2
+mutation_amount = 3
 base_food = 500
 base_cells = 1000
 
@@ -21,18 +21,33 @@ window.setBackground('black')
 
 running = True
 
+Creatures = [creature.Creature(window, max_screen_x, max_screen_y, random.randint(0, max_screen_x),
+                               random.randint(0, max_screen_y)) for i in range(base_cells)]
+Foods = [food.Food(window, max_screen_x, max_screen_y) for i in range(base_food)]
+
 def main():
 
+    print("main() called")
     frame = 0
     time1 = int(round(time.time() * 1000))
     time2 = int(round(time.time() * 1000))
 
-    text = Text(Point(65, 20), "FPS: 0")
-    text.setTextColor("white")
-    text.setSize(25)
-    text.draw(window)
+    textfps = Text(Point(65, 20), "FPS: 0")
+    textfps.setTextColor("white")
+    textfps.setSize(25)
+    textfps.draw(window)
 
-    for i in range(100000):
+    textcreature = Text(Point(110, 50), "Creatures: 0")
+    textcreature.setTextColor("white")
+    textcreature.setSize(25)
+    textcreature.draw(window)
+
+    textfood = Text(Point(75, 85), "Food: 0")
+    textfood.setTextColor("white")
+    textfood.setSize(25)
+    textfood.draw(window)
+
+    for i in range(1000000):
 
         update(frame)
         
@@ -44,26 +59,66 @@ def main():
             time.sleep(1/fps)
 
         if round(1/(time2 - time1 + 1) * 1000) <= fps:
-            text.setText(f"FPS: {round(1/(time2 - time1 + 1) * 1000)}")
+
+            textfps.setText(f"FPS: {round(1/(time2 - time1 + 1) * 1000)}")
+
         else:
-            text.setText(f"FPS: {fps}")
+
+            textfps.setText(f"FPS: {fps}")
+            
+        textcreature.setText(f"Creatures: {len(Creatures)}")
+        textfood.setText(f"Food: {len(Foods)}")
 
         frame += 1
 
         time1 = int(round(time.time() * 1000))
 
-Creatures = [creature.Creature(window, max_screen_x, max_screen_y, random.randint(0, max_screen_x),
-                               random.randint(0, max_screen_y)) for i in range(base_cells)]
-Foods = [food.Food(window, max_screen_x, max_screen_y) for i in range(base_food)]
+
+def save_brain(brain, frame, score):
+
+    with open(f"best_brain_frame_{frame}.txt", "w") as file:
+
+        file.write("Best brain architecture\n")
+        file.write(f"Number of frames survived: {frame}, with {score} food eaten\n")
+
+        for i, layer in enumerate(brain.layers):
+
+            file.write(f"Layer {i}:\n")
+            file.write(f"Weights:\n{layer.weights}\n")
+            file.write(f"Biases:\n{layer.biases}\n")
+            file.write("\n")
+
+    print("Saved the best brain of this simulation")
+
+
+
+best_cell = 0
+best_brain = Creatures[best_cell].brain
+best_frame = 0
+best_score = 0
 
 def update(frame):
 
+    global best_cell, best_brain, best_frame, best_score
+
     if frame % 60 == 0:
 
-        new_food = food.Food(window, max_screen_x, max_screen_y)
-        Foods.append(new_food)
+        for i in range(random.randint(1, 3)):
+
+            new_food = food.Food(window, max_screen_x, max_screen_y)
+            Foods.append(new_food)
 
     for cell in Creatures[:]:
+
+        if frame >= 300:
+
+            if cell.time_alive > best_frame:
+
+                best_cell = Creatures.index(cell)
+                best_brain = cell.brain
+                best_frame = cell.time_alive
+                best_score = cell.full_score
+                
 
         closestDistance = 10000
         closestID = 0
@@ -81,6 +136,8 @@ def update(frame):
 
                 cell.food += 600
                 cell.score += 1
+                cell.full_score += 1
+                print(cell.full_score)
                 Foods.remove(food_item)
                 food_item.is_Dead = True
                 food_item.update()
@@ -95,7 +152,7 @@ def update(frame):
                         new_y = random.randint(cell.y - 20, cell.y + 20)
                         new_cell = creature.Creature(window, max_screen_x, max_screen_y, new_x, new_y)
                         Creatures.append(new_cell)
-                        new_cell.brain.layers = cell.nn.copyLayers()
+                        new_cell.brain = cell.brain.copy()
 
                         for layer in new_cell.brain.layers:
 
@@ -105,6 +162,12 @@ def update(frame):
         if cell.update() == "death":
 
             Creatures.remove(cell)
+
+        if (frame >= 300):
+
+            if len(Creatures) == 0:
+                
+                save_brain(best_brain, best_frame, best_score)
 
 
 if __name__ == "__main__":
