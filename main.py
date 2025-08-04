@@ -33,10 +33,18 @@ def update():
     print('update()')
 
     for cell in Creatures[:]:
-
+        closestDistance = 10000
+        closestID = 0
         for food in Foods[:]:
+            
+            if math.sqrt((cell.x - food.x) ** 2 + (cell.y - food.y) ** 2) < closestDistance:
 
-            if math.sqrt((cell.x - food.x) ** 2 + (cell.y - food.y) ** 2) < 7:
+                closestDistance = math.sqrt((cell.x - food.x) ** 2 + (cell.y - food.y) ** 2)
+                closestID = Foods.index(food)
+                cell.closestX = food.x
+                cell.closestY = food.y
+
+            if math.sqrt((cell.x - food.x) ** 2 + (cell.y - food.y) ** 2) < 7: #checking if the cell can eat this food
 
                 cell.food += 600
                 cell.score += 1
