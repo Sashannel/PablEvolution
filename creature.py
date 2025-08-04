@@ -24,7 +24,7 @@ class Creature():
         self.time_alive = 0
         self.closestX = 10000
         self.closestY = 10000
-        self.brain = NN.NN()
+        self.brain = NN.NN.create("random")
         self.nn = NN
         self.shape = Circle(Point(self.x, self.y), 7)
         self.shape.setFill('blue')
