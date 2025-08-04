@@ -5,6 +5,7 @@ class Food():
 
     def __init__(self, window, max_x, max_y):
 
+        print("New food created")
         self.x = random.randint(0, max_x)
         self.y = random.randint(0, max_y)
         self.is_Dead = False
@@ -20,5 +21,5 @@ class Food():
         if self.is_Dead:
 
             self.shape.undraw()
-            
+
             return "death"
