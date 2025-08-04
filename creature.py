@@ -20,6 +20,8 @@ class Creature():
         self.window = window
         self.max_x = max_x
         self.max_y = max_y
+        self.closestX = 10000
+        self.closestY = 10000
         self.shape = Circle(Point(self.x, self.y), 7)
         self.shape.setFill('blue')
         self.shape.draw(window)
@@ -117,6 +119,8 @@ class Creature():
 
             self.y = 0
 
-        output = (NN.NN().brain([self.x, self.y, self.health, self.food, self.is_Starving, self.direction, self.score]))[0]
+        output = (NN.NN().brain([
+            self.x, self.y, self.health, self.food, self.is_Starving, self.direction, self.score, self.closestX, self.closestY
+            ]))[0]
         self.direction = round(output) 
         self.move(self.direction, self.x, self.y, self.velocity)
