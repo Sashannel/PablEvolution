@@ -5,16 +5,17 @@ import random
 import NN
 import food
 from graphics import *
+from datetime import datetime
 
-fps = 60
+fps = 1000
 
 max_screen_x = 1820
 max_screen_y = 980
 
-mutation_chance = 0.1
-mutation_amount = 3
+mutation_chance = 0.9
+mutation_amount = 0.5
 base_food = 500
-base_cells = 1000
+base_cells = 100
 
 window = GraphWin("Pablo Evolution", max_screen_x, max_screen_y)
 window.setBackground('black')
@@ -74,12 +75,13 @@ def main():
         time1 = int(round(time.time() * 1000))
 
 
-def save_brain(brain, frame, score):
+def save_brain_txt(brain, frame, score, network_shape):
 
     with open(f"best_brain_frame_{frame}.txt", "w") as file:
 
         file.write("Best brain architecture\n")
         file.write(f"Number of frames survived: {frame}, with {score} food eaten\n")
+        file.write(f"Using this shape for the NN: {network_shape}\n")
 
         for i, layer in enumerate(brain.layers):
 
@@ -112,7 +114,7 @@ def update(frame):
 
         if frame >= 300:
 
-            if cell.time_alive > best_frame:
+            if (cell.time_alive + 1000 * cell.full_score) > (best_frame + 1000 * best_score):
 
                 best_cell = Creatures.index(cell)
                 best_brain = cell.brain
@@ -137,7 +139,7 @@ def update(frame):
                 cell.food += 600
                 cell.score += 1
                 cell.full_score += 1
-                print(cell.full_score)
+  
                 Foods.remove(food_item)
                 food_item.is_Dead = True
                 food_item.update()
@@ -167,7 +169,10 @@ def update(frame):
 
             if len(Creatures) == 0:
                 
-                save_brain(best_brain, best_frame, best_score)
+                save_brain_txt(best_brain, best_frame, best_score, best_brain.networkShape)
+                now = datetime.now()
+                filename = now.strftime("%Y-%m-%d--%H-%M") + f"--{best_frame}-{best_score}.json"
+                best_brain.save(filename)
 
 
 if __name__ == "__main__":
