@@ -1,13 +1,14 @@
 import numpy as numpy
 import math
 import random
+import json
 
 class NN:
 
     def __init__(self):
 
         self.layers = []
-        self.networkShape = [10, 15, 15, 1]
+        self.networkShape = [10, 8, 16, 16, 8, 1]
 
         for i in range(1, len(self.networkShape)):
 
@@ -47,9 +48,71 @@ class NN:
         return copied_layers
     
     def copy(self):
+
         new_nn = NN()
         new_nn.layers = self.copyLayers()
         return new_nn
+    
+
+    @staticmethod
+    def create(mode="random", filepath=None):
+
+        if mode == "random":
+
+            return NN()
+        
+        elif mode == "saved":
+
+            if filepath == None:
+
+                print("No save file found")
+
+            return NN.load(filepath)
+        
+        else:
+
+            print("Only random and saved values are accepted")
+
+
+    @classmethod
+    def load(cls, filepath):
+
+        with open(filepath, 'r') as f:
+
+            data = json.load(f)
+
+
+        nn = cls.__new__(cls)  # Bypass __init__
+        nn.networkShape = data['networkShape']
+        nn.layers = []
+
+        for i, layer_data in enumerate(data['layers']):
+
+            num_inputs = nn.networkShape[i]
+            num_nodes = nn.networkShape[i + 1]
+            layer = Layer(num_inputs, num_nodes)
+            layer.weights = numpy.array(layer_data['weights'])
+            layer.biases = numpy.array(layer_data['biases'])
+            nn.layers.append(layer)
+
+        return nn
+    
+    
+    def save(self, filepath):
+        
+        data = {
+            'networkShape': self.networkShape,
+            'layers': [
+                {
+                    'weights': layer.weights.tolist(),
+                    'biases': layer.biases.tolist()
+                } for layer in self.layers
+            ]
+        }
+
+        with open(filepath, 'w') as f:
+
+            json.dump(data, f)
 
 
 class Layer:
