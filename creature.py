@@ -7,11 +7,13 @@ class Creature():
 
     def __init__(self, window, max_x, max_y, x, y):
 
+        print("New creature created")
         self.x = x
         self.y = y
         self.health = 10
         self.food = 300
         self.score = 0
+        self.full_score = 0
         self.is_Starving = False
         self.direction = 4 #0=STOP 1= LEFT 2= RIGHT 3= UP 4= DOWN
         self.velocity = 5
@@ -95,9 +97,6 @@ class Creature():
             self.food -= 1
         if self.is_Starving == True:
             self.health -= 1
-
-        if self.time_alive > 3600:
-            self.health = 0
 
         if self.health <= 0:
 
