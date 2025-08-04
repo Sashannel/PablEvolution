@@ -6,7 +6,7 @@ class NN:
     def __init__(self):
 
         self.layers = []
-        self.networkShape = [7, 30, 15, 15, 1]
+        self.networkShape = [9, 30, 15, 15, 1]
 
         for i in range(1, len(self.networkShape)):
 
