@@ -16,25 +16,25 @@ class Creature():
         self.direction = 4 #0=STOP 1= LEFT 2= RIGHT 3= UP 4= DOWN
         self.velocity = 5
         self.is_Dead = False
-        self.id = 0
         self.window = window
         self.max_x = max_x
         self.max_y = max_y
+        self.time_alive = 0
         self.closestX = 10000
         self.closestY = 10000
+        self.brain = NN.NN()
+        self.nn = NN
         self.shape = Circle(Point(self.x, self.y), 7)
         self.shape.setFill('blue')
         self.shape.draw(window)
-        print("Initial values:", self.x, self.y)
 
-    def move(self, direction, x, y, velocity):
+    def move(self, direction, velocity):
 
         if direction == 0: #STOP
 
             self.shape.move(0, 0)
             self.x = self.x
             self.y = self.y
-            print("CELL STOPPED!")
 
         elif direction == 1: #LEFT
 
@@ -43,7 +43,7 @@ class Creature():
                 self.shape.move(-velocity, 0)
                 self.x = self.x - velocity
                 self.y = self.y
-                print("CELL GOING LEFT!")
+
             else:
 
                 pass
@@ -55,7 +55,7 @@ class Creature():
                 self.shape.move(velocity, 0)
                 self.x = self.x + velocity
                 self.y = self.y
-                print("CELL GOING RIGHT!")
+
             else:
 
                 pass
@@ -67,7 +67,7 @@ class Creature():
                 self.shape.move(0, -velocity)
                 self.x = self.x
                 self.y = self.y - velocity
-                print("CELL GOING UP!")
+
             else:
 
                 pass
@@ -78,7 +78,6 @@ class Creature():
                 self.shape.move(0, velocity)
                 self.x = self.x
                 self.y = self.y + velocity
-                print("CELL GOING DOWN!")
 
             else:
 
@@ -96,6 +95,9 @@ class Creature():
             self.food -= 1
         if self.is_Starving == True:
             self.health -= 1
+
+        if self.time_alive > 3600:
+            self.health = 0
 
         if self.health <= 0:
 
@@ -119,8 +121,10 @@ class Creature():
 
             self.y = 0
 
-        output = (NN.NN().brain([
-            self.x, self.y, self.health, self.food, self.is_Starving, self.direction, self.score, self.closestX, self.closestY
+        output = (self.brain.brain([
+            self.x, self.y, self.health, self.food, self.is_Starving, self.direction, self.score, self.closestX, self.closestY,
+            self.time_alive
             ]))[0]
         self.direction = round(output) 
-        self.move(self.direction, self.x, self.y, self.velocity)
+        self.move(self.direction, self.velocity)
+        self.time_alive += 1
