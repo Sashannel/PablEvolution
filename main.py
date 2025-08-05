@@ -12,23 +12,34 @@ fps = 1000
 max_screen_x = 1820
 max_screen_y = 980
 
-mutation_chance = 0.2
-mutation_amount = 0.5
-base_food = 400
-base_cells = 1
+
 
 window = GraphWin("Pablo Evolution", max_screen_x, max_screen_y)
 window.setBackground('black')
 
 running = True
 
-Creatures = [creature.Creature(window, max_screen_x, max_screen_y, random.randint(0, max_screen_x),
-                               random.randint(0, max_screen_y)) for i in range(base_cells)]
-Foods = [food.Food(window, max_screen_x, max_screen_y) for i in range(base_food)]
+Creatures = []
+Foods = []
 
-def main():
-
+def main(mutation_chance, mutation_amount, base_food, base_cells, new_fps):
+    
     print("main() called")
+
+    global Creatures, Foods
+
+    fps = new_fps
+
+    mutation_chance = mutation_chance
+    mutation_amount = mutation_amount
+    base_food = base_food
+    base_cells = base_cells
+
+    Creatures = [creature.Creature(window, max_screen_x, max_screen_y, random.randint(0, max_screen_x),
+                                random.randint(0, max_screen_y)) for i in range(base_cells)]
+    Foods = [food.Food(window, max_screen_x, max_screen_y) for i in range(base_food)]
+
+    
     frame = 0
     time1 = int(round(time.time() * 1000))
     time2 = int(round(time.time() * 1000))
@@ -48,9 +59,14 @@ def main():
     textfood.setSize(25)
     textfood.draw(window)
 
+    best_cell = 0
+    best_brain = Creatures[best_cell].brain
+    best_frame = 0
+    best_score = 0
+
     for i in range(1000000):
 
-        update(frame)
+        update(frame, mutation_chance, mutation_amount, best_cell, best_brain, best_frame, best_score)
         
 
         time2 = int(round(time.time() * 1000))
@@ -74,6 +90,9 @@ def main():
 
         time1 = int(round(time.time() * 1000))
 
+if __name__ == "__main__":
+
+    main()
 
 def save_brain_txt(brain, frame, score, network_shape):
 
@@ -94,14 +113,8 @@ def save_brain_txt(brain, frame, score, network_shape):
 
 
 
-best_cell = 0
-best_brain = Creatures[best_cell].brain
-best_frame = 0
-best_score = 0
 
-def update(frame):
-
-    global best_cell, best_brain, best_frame, best_score
+def update(frame, mutation_chance, mutation_amount, best_cell, best_brain, best_frame, best_score):
 
     if frame % 60 == 0:
 
@@ -174,7 +187,3 @@ def update(frame):
                 filename = now.strftime("%Y-%m-%d--%H-%M") + f"--{best_frame}-{best_score}.json"
                 best_brain.save(filename)
 
-
-if __name__ == "__main__":
-
-    main()
