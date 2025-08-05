@@ -12,10 +12,10 @@ fps = 1000
 max_screen_x = 1820
 max_screen_y = 980
 
-mutation_chance = 0.9
+mutation_chance = 0.2
 mutation_amount = 0.5
-base_food = 500
-base_cells = 100
+base_food = 400
+base_cells = 1
 
 window = GraphWin("Pablo Evolution", max_screen_x, max_screen_y)
 window.setBackground('black')
@@ -55,7 +55,7 @@ def main():
 
         time2 = int(round(time.time() * 1000))
 
-        if time2 - time1 * 1000 < 1/fps:
+        if (time2 - time1) * 1000 < 1/fps:
 
             time.sleep(1/fps)
 
