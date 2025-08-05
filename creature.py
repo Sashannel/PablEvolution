@@ -24,7 +24,15 @@ class Creature():
         self.time_alive = 0
         self.closestX = 10000
         self.closestY = 10000
-        self.brain = NN.NN.create("random")
+        rand =  random.randint(1, 4)
+        if rand == 1:
+            self.brain = NN.NN.create("saved", "model3/2025-08-05--20-20--13509-22.json")
+        elif rand == 2:
+            self.brain = NN.NN.create("saved", "model3/2025-08-05--21-49--12309-20.json")
+        elif rand==3:
+            self.brain = NN.NN.create("saved", "model3/2025-08-05--21-55--14709-24.json")
+        elif rand==4:
+            self.brain = NN.NN.create("saved", "model3/2025-08-05--21-51--12909-21.json")
         self.nn = NN
         self.shape = Circle(Point(self.x, self.y), 7)
         self.shape.setFill('blue')
