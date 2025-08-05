@@ -134,7 +134,7 @@ class Layer:
 
     def activation(self):
 
-        self.nodes = 4 * numpy.tanh(self.nodes)
+        self.nodes = 2 * (numpy.tanh(self.nodes) + 1)
 
     def mutateLayer(self, mutation_chance, mutation_amount):
 
